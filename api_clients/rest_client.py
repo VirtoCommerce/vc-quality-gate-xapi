@@ -1,41 +1,53 @@
 import requests
-import time
+from dotenv import load_dotenv, set_key
+import os
+
+global auth_token
+
 
 class RestClient:
-    def __init__(self, base_url, admin_user, admin_pass):
+    def __init__(self, base_url):
         self.base_url = base_url
-        self.access_token = None
-        self.token_expiration_time = None
-        self.admin_user = admin_user
-        self.admin_pass = admin_pass
+        self.token = None
 
-    def authenticate(self):
+    def authenticate(self, username, password):
         url = f"{self.base_url}/connect/token"
-        headers = {"Content-Type": "application/x-www-form-urlencoded"}
-        data = {
+        payload = {
             "grant_type": "password",
             "scope": "offline_access",
-            "username": self.admin_user,
-            "password": self.admin_pass,
+            "username": username,
+            "password": password,
         }
-        response = requests.post(url, headers=headers, data=data)
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        response = requests.post(url, data=payload, headers=headers)
         if response.status_code == 200:
-            token_data = response.json()
-            self.access_token = token_data["access_token"]
-            self.token_expiration_time = time.time() + token_data["expires_in"] - 60
+            self.token = response.json().get("access_token")
         else:
-            raise Exception(f"Token fetch failed: {response.text}")
-
-    def is_token_expired(self):
-        return not self.access_token or time.time() >= self.token_expiration_time
+            raise Exception(f"Auth failed: {response.status_code} - {response.text()}")
+                
+        # Extract the token from the response
+        token = response.json().get('access_token')
+        if token:                   
+           set_key('.env', 'ADMIN_TOKEN', token)
+           print('Token retrieved and saved successfully!')
+        else:
+            print('Failed to retrieve token')
+            print(response.text)
+   
 
     def get_headers(self):
-        if self.is_token_expired():
-            self.authenticate()
-        return {"Authorization": f"Bearer {self.access_token}"}
+        if not self.token:
+            raise Exception("No token found. Please authenticate first.")
+        return {"Authorization": f"Bearer {self.token}"}
 
-    def send_request(self, method, endpoint, data=None):
-        url = f"{self.base_url}{endpoint}"
+    def get(self, endpoint):
+        url = f"{self.base_url}/{endpoint}"
         headers = self.get_headers()
-        response = requests.request(method, url, headers=headers, json=data)
-        return response.json()
+        response = requests.get(url, headers=headers)
+        return response
+
+    def post(self, endpoint, data):
+        url = f"{self.base_url}/{endpoint}"
+        headers = self.get_headers()
+        response = requests.post(url, json=data, headers=headers)
+        return response
