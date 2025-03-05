@@ -25,6 +25,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt  # Install dependencies from requirements file
+          pip install pytest-playwright
           playwright install --with-deps  # Install Playwright and dependencies
 
       - name: Run Playwright tests
