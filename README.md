@@ -4,9 +4,10 @@
 Make sure you have the following installed on your system:
 - Python (version 3.7 or later)
 - pip (Python package manager)
-- Node.js (for Playwright CLI, optional but recommended)
+- Node.js (for Playwright CLI)
+- Git (for version control)
 
-## Installation
+## Project Setup
 
 1. **Create and activate a virtual environment (optional but recommended)**
    ```sh
@@ -35,6 +36,16 @@ Make sure you have the following installed on your system:
 To execute your Playwright tests with pytest, run:
 ```sh
 pytest
+# Run all tests in the file
+# Example:
+pytest tests/test_auth.py
+
+# Run a specific test
+pytest tests/test_auth.py -k test_user_registration
+pytest tests/test_auth.py -k test_user_login
+
+# Run with more detailed output
+pytest tests/test_auth.py -v
 ```
 
 If you want to run Playwright tests in headed mode (with browser UI), use:
