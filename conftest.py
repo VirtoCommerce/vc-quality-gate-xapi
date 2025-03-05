@@ -15,7 +15,3 @@ def rest_client():
 @pytest.fixture(scope="session")
 def graphql_client(rest_client):
     return GraphQLClient(rest_client.base_url, rest_client)
-
-
-
-
