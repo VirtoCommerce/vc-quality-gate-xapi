@@ -1,18 +1,24 @@
 import pytest
 from playwright.sync_api import Playwright, expect
 import random
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+  
 
 @pytest.fixture
 def browser_context(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
     yield page
     context.close()
     browser.close()
 
-def test_user_registration(browser_context):
-    url = "https://vcst-qa-storefront.govirto.com"
+def test_user_registration(browser_context):    
+   
+    url = os.getenv("BASE_URL", "https://vcst-qa-storefront.govirto.com")
     page = browser_context
     
     # Navigate to registration page
