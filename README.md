@@ -1,98 +1,85 @@
-
-# vc-quality-gate-xapi
-
-
-## Overview
-This project is an API testing framework using **Python + Playwright**. It allows testing **REST APIs and GraphQL APIs** efficiently with automated scripts.
+# Playwright + Python Project Setup
 
 ## Prerequisites
-Before setting up the project, ensure you have the following installed:
-- **Python** (>= 3.8)
-- **pip** (Python package manager)
-- **Node.js** (Required for Playwright)
+Make sure you have the following installed on your system:
+- Python (version 3.7 or later)
+- pip (Python package manager)
+- Node.js (for Playwright CLI, optional but recommended)
 
 ## Installation
-Follow these steps to set up the project:
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd <project-folder>
-```
+1. **Create and activate a virtual environment (optional but recommended)**
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On macOS/Linux
+   venv\Scripts\activate     # On Windows
+   ```
 
-### 2. Create a Virtual Environment (Optional but Recommended)
-```bash
-python -m venv venv
-source venv/bin/activate   # On macOS/Linux
-venv\Scripts\activate     # On Windows
-```
+2. **Install dependencies**
+   ```sh
+   pip install playwright pytest
+   ```
 
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+3. **Install Playwright browsers**
+   ```sh
+   playwright install
+   ```
 
-### 4. Install Playwright Browsers
-Playwright requires browsers to be installed for web interactions.
-```bash
-playwright install
-```
-
-## Configuration
-### 1. Set Up Environment Variables
-Create a `.env` file and add the necessary variables:
-```ini
-BASE_URL=<API_BASE_URL>
-AUTH_TOKEN=<YOUR_AUTH_TOKEN>
-```
+4. **Verify Playwright installation**
+   ```sh
+   python -c "import playwright; print(playwright.__version__)"
+   ```
 
 ## Running Tests
 
-### 1. Run All Tests
-```bash
+To execute your Playwright tests with pytest, run:
+```sh
 pytest
 ```
 
-### 2. Run a Specific Test File
-```bash
-pytest tests/test_example.py
+If you want to run Playwright tests in headed mode (with browser UI), use:
+```sh
+pytest --headed
 ```
 
-### 3. Run Tests with Verbose Output
-```bash
-pytest -v
+For running tests in a specific browser, specify it as follows:
+```sh
+pytest --browser=chromium  # or firefox, webkit
 ```
 
-### 4. Run Tests with Playwright Debug Mode
-```bash
-pytest --headed  # Runs Playwright tests with UI
+## Environment Variables
+To store authentication tokens and other secrets securely, create a `.env` file:
+```ini
+TOKEN=your_auth_token_here
+```
+Then, load environment variables in your test files using:
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+TOKEN = os.getenv("TOKEN")
 ```
 
-## Project Structure
-```
-.
-├── tests/                # Test scripts
-│   ├── test_api.py       # API test example
-│   ├── test_graphql.py   # GraphQL test example
-├── utils/                # Utility functions
-├── .env                  # Environment variables (excluded in .gitignore)
-├── requirements.txt      # Python dependencies
-├── README.md             # Project documentation
-└── pytest.ini            # Pytest configuration
-```
-
-## Additional Playwright Commands
-- **Show browsers Playwright supports**:
-  ```bash
-  playwright install --list
+## Debugging Tests
+- Use `--slowmo` to slow down execution for debugging:
+  ```sh
+  pytest --headed --slowmo=500  # 500ms delay between steps
   ```
-- **Run tests in headless mode (default behavior)**:
-  ```bash
-  pytest --headless
+- Run tests in debug mode:
+  ```sh
+  pytest --headed --debug
   ```
 
-## Contributing
-Feel free to submit issues or pull requests to improve the project.
+## Generating Tests Automatically
+Playwright can generate tests for you by recording actions:
+```sh
+playwright codegen example.com
+```
+This opens a browser where you can perform actions, and Playwright generates the corresponding test script.
 
-## License
-This project is licensed under the [MIT License](LICENSE).
+## Additional Resources
+- [Playwright Documentation](https://playwright.dev/python/)
+- [pytest Documentation](https://docs.pytest.org/en/latest/)
+
+Happy Testing! 🚀
