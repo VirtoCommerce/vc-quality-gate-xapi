@@ -8,55 +8,54 @@ on:
     branches:
       - dev
 
-env:
-  ENVIRONMENT_URL: https://vcst-qa-storefront.govirto.com
-  BASE_URL: https://vcst-qa.govirto.com
-  GRAPHQL_ENDPOINT: "${{ env.BASE_URL }}/graphql"
-  ADMIN_USERNAME: admin
-  ADMIN_PASSWORD: Password3
-  AUTH_TOKEN: "Bearer ${{ secrets.ADMIN_TOKEN }}"
-
 jobs:
   test:
-    timeout-minutes: 60  # Add timeout to prevent hanging jobs
+    timeout-minutes: 60  # Prevent hanging jobs
     runs-on: ubuntu-latest
 
     env:
-      ENVIRONMENT_URL: ${{ env.ENVIRONMENT_URL }}
-      BASE_URL: ${{ env.BASE_URL }}
-      GRAPHQL_ENDPOINT: ${{ env.GRAPHQL_ENDPOINT }}
-      ADMIN_USERNAME: ${{ env.ADMIN_USERNAME }}
-      ADMIN_PASSWORD: ${{ env.ADMIN_PASSWORD }}
-      ADMIN_TOKEN: ${{ env.AUTH_TOKEN }}
+      ENVIRONMENT_URL: https://vcst-qa-storefront.govirto.com
+      BASE_URL: https://vcst-qa.govirto.com
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: Password3
+      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}  # Store sensitive tokens as GitHub Secrets
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Use latest version
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          cache: 'pip'  # Enable pip caching for faster installations
+          cache: 'pip'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest-playwright
-          playwright install --with-deps chromium  # Install only Chromium to save time
+          pip install pytest pytest-playwright
+          playwright install --with-deps  # Ensure all dependencies are installed
 
-      - name: Run Playwright tests
+      - name: Define additional environment variables
         run: |
-          pytest --headless --browser chromium --html=report.html --self-contained-html
-        continue-on-error: true  # Continue to upload report even if tests fail
+          echo "GRAPHQL_ENDPOINT=${ENVIRONMENT_URL}/graphql" >> $GITHUB_ENV
 
-      - name: Upload Playwright test report
+      - name: Run Authentication Tests
+        run: |
+          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
+          pytest tests/test_auth.py -v
+
+      - name: Run Playwright Tests
+        run: |
+          pytest --browser chromium --html=report.html --self-contained-html
+        continue-on-error: true  # Continue to upload reports even if tests fail
+
+      - name: Upload Playwright Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-test-report
           path: |
             report.html
-            test-results/  # Include test results directory for debugging
           retention-days: 7
