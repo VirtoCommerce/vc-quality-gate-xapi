@@ -17,8 +17,13 @@ if not ADMIN_PASSWORD:
     raise ValueError("ADMIN_PASSWORD environment variable is required")
 
 # Optional environment variables with defaults
-GRAPHQL_ENDPOINT = os.getenv("GRAPHQL_ENDPOINT", "/graphql")
+# Check if GRAPHQL_ENDPOINT is explicitly set, otherwise construct from BASE_URL
+GRAPHQL_ENDPOINT = os.getenv("GRAPHQL_ENDPOINT") or f"{BASE_URL}/graphql"
+
+# Get admin token from ADMIN_TOKEN env var
 AUTH_TOKEN = os.getenv("ADMIN_TOKEN")
+if AUTH_TOKEN and not AUTH_TOKEN.startswith("Bearer "):
+    AUTH_TOKEN = f"Bearer {AUTH_TOKEN}"
 
 # Headers configuration
 DEFAULT_HEADERS = {
@@ -27,4 +32,4 @@ DEFAULT_HEADERS = {
 
 # Only add Authorization header if token exists
 if AUTH_TOKEN:
-    DEFAULT_HEADERS["Authorization"] = f"Bearer {AUTH_TOKEN}"
+    DEFAULT_HEADERS["Authorization"] = AUTH_TOKEN
