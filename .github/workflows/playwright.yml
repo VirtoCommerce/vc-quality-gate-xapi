@@ -1,4 +1,4 @@
-name: Playwright Python Tests
+name: Playwright Tests
 
 on:
   push:
@@ -9,17 +9,25 @@ on:
       - dev
 
 env:
-  ENVIRONMENT_URL: "https://vcst-qa-storefront.govirto.com"
-  BASE_URL: "${{ env.ENVIRONMENT_URL }}"
+  ENVIRONMENT_URL: https://vcst-qa-storefront.govirto.com
+  BASE_URL: https://vcst-qa.govirto.com
   GRAPHQL_ENDPOINT: "${{ env.BASE_URL }}/graphql"
-  ADMIN_USER: "admin"
-  ADMIN_PASS: "Password3"
+  ADMIN_USERNAME: admin
+  ADMIN_PASSWORD: Password3
   AUTH_TOKEN: "Bearer ${{ secrets.ADMIN_TOKEN }}"
 
 jobs:
   test:
     timeout-minutes: 60  # Add timeout to prevent hanging jobs
     runs-on: ubuntu-latest
+
+    env:
+      ENVIRONMENT_URL: ${{ env.ENVIRONMENT_URL }}
+      BASE_URL: ${{ env.BASE_URL }}
+      GRAPHQL_ENDPOINT: ${{ env.GRAPHQL_ENDPOINT }}
+      ADMIN_USERNAME: ${{ env.ADMIN_USERNAME }}
+      ADMIN_PASSWORD: ${{ env.ADMIN_PASSWORD }}
+      ADMIN_TOKEN: ${{ env.AUTH_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -39,12 +47,6 @@ jobs:
           playwright install --with-deps chromium  # Install only Chromium to save time
 
       - name: Run Playwright tests
-        env:
-          BASE_URL: ${{ env.ENVIRONMENT_URL }}
-          GRAPHQL_ENDPOINT: ${{ env.GRAPHQL_ENDPOINT }}  # Fixed to use the correct env variable
-          ADMIN_USERNAME: ${{ env.ADMIN_USER }}
-          ADMIN_PASSWORD: ${{ env.ADMIN_PASS }}
-          ADMIN_TOKEN: ${{ env.AUTH_TOKEN }}
         run: |
           pytest --headless --browser chromium --html=report.html --self-contained-html
         continue-on-error: true  # Continue to upload report even if tests fail
