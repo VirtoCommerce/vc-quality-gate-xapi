@@ -5,11 +5,13 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-  
+
+# Add this to store email between tests
+email = None
 
 @pytest.fixture
 def browser_context(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     yield page
@@ -17,7 +19,7 @@ def browser_context(playwright: Playwright):
     browser.close()
 
 def test_user_registration(browser_context):    
-   
+    global email
     url = os.getenv("BASE_URL", "https://vcst-qa-storefront.govirto.com")
     page = browser_context
     
@@ -43,8 +45,9 @@ def test_user_registration(browser_context):
     # Navigate home
     page.get_by_role("link", name="Home page").click()
 
-def test_user_login(browser_context):
-    url = "https://vcst-qa-storefront.govirto.com"
+def test_user_login(browser_context): 
+    global email
+    url = os.getenv("BASE_URL", "https://vcst-qa-storefront.govirto.com")
     page = browser_context
     
     # Navigate to login page

@@ -9,7 +9,7 @@ on:
       - dev
 
 jobs:
-  test:
+  playwright-test:
     timeout-minutes: 60  # Prevent hanging jobs
     runs-on: ubuntu-latest
 
