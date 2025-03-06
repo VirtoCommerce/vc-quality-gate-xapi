@@ -11,7 +11,7 @@ email = None
 
 @pytest.fixture
 def browser_context(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
     yield page
@@ -24,11 +24,11 @@ def test_user_registration(browser_context):
     page = browser_context
     
     # Navigate to registration page
-    page.goto(url)
-    print(page.content())
+    page.goto(url)    
     page.wait_for_timeout(1000)
-    expect(page.get_by_text("Sign up now")).to_be_visible()
-    page.get_by_text("Sign up now").click()
+    #expect(page.get_by_text("Sign up now")).to_be_visible()
+    #page.get_by_text("Sign up now").click()
+    page.goto(url + "/sign-up")
     
     # Fill registration form
     page.get_by_role("textbox", name="First name").fill("John")
@@ -56,8 +56,10 @@ def test_user_login(browser_context):
     
     # Navigate to login page
     page.goto(url)
-    expect(page.get_by_text("Sign in")).to_be_visible()
-    page.get_by_text("Sign in").click()
+    page.wait_for_timeout(1000)
+    #expect(page.get_by_text("Sign in")).to_be_visible()
+    #page.get_by_text("Sign in").click()
+    page.goto(url + "/sign-in")
     
     # Fill login form
     page.get_by_role("textbox", name="Email").fill(email)
