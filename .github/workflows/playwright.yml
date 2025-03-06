@@ -35,11 +35,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-playwright pytest-html
+
+      - name: Clean Playwright Cache  
+        run: rm -rf ~/.cache/ms-playwright
           
       - name: Install Playwright browsers
         run: |
           python -m playwright install chromium
           python -m playwright install-deps chromium
+
+      - name: Verify Playwright Browsers
+        run: ls -la $(playwright show-browsers-path)  #Debugging step    
 
       - name: Run Playwright Tests
         run: |
