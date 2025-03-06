@@ -37,16 +37,14 @@ jobs:
           pip install pytest pytest-playwright
           playwright install --with-deps  # Ensure all dependencies are installed
 
-      - name: Run Playwright Tests (Headless)
-        run: pytest tests/ --browser chromium --capture=no
-        env:
-          PWDEBUG: 1
-          PYTHONPATH: ${{ github.workspace }}
-
       - name: Run Playwright Tests
         run: |
-          pytest --browser chromium --html=report.html --self-contained-html
-        continue-on-error: true  # Continue to upload reports even if tests fail
+          pytest tests/ --browser chromium --html=report.html --self-contained-html -v
+        env:
+          # Add these for better debugging
+          PYTHONUNBUFFERED: 1
+          PLAYWRIGHT_BROWSERS_PATH: 0
+        continue-on-error: true
 
       - name: Upload Playwright Test Report
         if: always()
@@ -55,4 +53,12 @@ jobs:
           name: playwright-test-report
           path: |
             report.html
+          retention-days: 7
+
+      - name: Upload Test Screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: test-results/
           retention-days: 7
