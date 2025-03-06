@@ -42,10 +42,8 @@ jobs:
         env:
            PWDEBUG: 1  # Enables detailed Playwright debugging logs        
 
-      - name: Run Authentication Tests
-        run: |
-          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
-          pytest tests/test_auth.py -v
+      - name: Run Playwright Tests (Headless)
+        run: pytest --browser chromium --headless
 
       - name: Run Playwright Tests
         run: |
