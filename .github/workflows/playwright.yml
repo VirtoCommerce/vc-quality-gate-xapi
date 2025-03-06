@@ -37,9 +37,13 @@ jobs:
           pip install pytest pytest-playwright
           playwright install --with-deps  # Ensure all dependencies are installed
 
-      - name: Define additional environment variables
-        run: |
-          echo "GRAPHQL_ENDPOINT=${ENVIRONMENT_URL}/graphql" >> $GITHUB_ENV
+      - name: Run Playwright with Debugging
+        run: pytest --browser chromium --verbose
+        env:
+           PWDEBUG: 1  # Enables detailed Playwright debugging logs
+           
+      - name: Run Playwright Tests in Headed Mode (Debugging)
+        run: pytest --browser chromium --headed
 
       - name: Run Authentication Tests
         run: |
