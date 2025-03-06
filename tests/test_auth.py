@@ -3,6 +3,7 @@ from playwright.sync_api import Playwright, expect
 import random
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 
@@ -31,20 +32,30 @@ def test_user_registration(browser_context):
     page.goto(url + "/sign-up")
     
     # Fill registration form
-    page.get_by_role("textbox", name="First name").fill("John")
-    page.get_by_role("textbox", name="Last name").fill("Playwright")
+    first_name_input = page.locator("input[name='firstName']")
+    first_name_input.wait_for(state="visible", timeout=5000)
+    first_name_input.fill("John")
+    last_name_input = page.locator("input[name='lastName']")
+    last_name_input.wait_for(state="visible", timeout=5000)
+    last_name_input.fill("Playwright")
     global email
     email = "johnplaywright" + str(random.randint(1000,9999)) + "@example.com"
-    page.get_by_role("textbox", name="Email").fill(email)
+    email_input = page.locator("input[name='email']")
+    email_input.wait_for(state="visible", timeout=5000)
+    email_input.fill(email)
     print(email)
-    page.get_by_role("textbox", name="Password", exact=True).fill("Password1")
-    page.get_by_role("textbox", name="Confirm password").fill("Password1")
+    password_input = page.locator("input[aria-label='Password']")
+    password_input.wait_for(state="visible", timeout=5000)
+    password_input.fill("Password1")
+    confirm_password_input = page.locator("input[aria-label='Confirm password']")
+    confirm_password_input.wait_for(state="visible", timeout=5000)
+    confirm_password_input.fill("Password1")
     
     # Submit registration
-    page.get_by_role("button", name="Sign up").click()
+    page.locator("button[type='submit']").click()
     
     # Verify registration success
-    expect(page.get_by_role("heading", name="Registration completed")).to_be_visible()
+    expect(page.locator("h1").filter(has_text=re.compile(r"^Registration completed$"))).to_be_visible()
     
     # Navigate home
     page.get_by_role("link", name="Home page").click()
@@ -62,11 +73,15 @@ def test_user_login(browser_context):
     page.goto(url + "/sign-in")
     
     # Fill login form
-    page.get_by_role("textbox", name="Email").fill(email)
-    page.get_by_role("textbox", name="Password", exact=True).fill("Password1")
+    email_input = page.locator("input[aria-label='Email']")
+    email_input.wait_for(state="visible", timeout=5000)
+    email_input.fill(email)
+    password_input = page.locator("input[aria-label='Password']")
+    password_input.wait_for(state="visible", timeout=5000)
+    password_input.fill("Password1")
     
     # Submit login
-    page.get_by_role("button", name="Log in").click()
+    page.locator("button[type='submit']").click()
     
     # Verify successful login (you may want to add appropriate verification)
     # For example, check if user menu or profile elements are visible
