@@ -36,26 +36,19 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-playwright pytest-html
 
-      - name: Clean Playwright Cache  
-        run: rm -rf ~/.cache/ms-playwright
-          
+              
       - name: Install Playwright Browsers
         run: |
-          playwright install
-          playwright install-deps
-          sudo apt-get update
-          sudo apt-get install -y libgbm-dev  # Required for Chromium
-          sudo apt-get install -y xvfb        # Virtual framebuffer for headless mode
-      
-      - name: Run Authentication Tests
-        run: |
-          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
-          pytest tests/test_auth.py -v
+          python -m playwright install --with-deps
 
+      - name: Run your tests
+        run: pytest --tracing=retain-on-failure
+      
       - name: Run Playwright Tests
         run: |
-          pytest --browser chromium --html=report.html --self-contained-html
-        continue-on-error: true  # Continue to upload reports even if tests fail
+          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
+          pytest tests/ --browser chromium --html=report.html --self-contained-html -v
+        continue-on-error: true
 
 
       - name: Upload Playwright Test Report
@@ -68,9 +61,9 @@ jobs:
           retention-days: 7
 
       - name: Upload Test Screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
-          name: test-screenshots
-          path: test-results/
+          name: playwright-traces
+          path: test-results/     
           retention-days: 7
