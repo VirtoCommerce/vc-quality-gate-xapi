@@ -38,9 +38,10 @@ jobs:
           playwright install --with-deps  # Ensure all dependencies are installed
 
       - name: Run Playwright Tests (Headless)
-        run: pytest --browser chromium --headless
+        run: pytest tests/ --browser chromium --capture=no
         env:
-           PWDEBUG: 1  # Enables detailed Playwright debugging logs     
+          PWDEBUG: 1
+          PYTHONPATH: ${{ github.workspace }}
 
       - name: Run Playwright Tests
         run: |
