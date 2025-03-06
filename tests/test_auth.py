@@ -11,7 +11,7 @@ email = None
 
 @pytest.fixture
 def browser_context(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=False)
+    browser = playwright.chromium.launch(headless=True)
     context = browser.new_context()
     page = context.new_page()
     yield page
