@@ -37,13 +37,10 @@ jobs:
           pip install pytest pytest-playwright
           playwright install --with-deps  # Ensure all dependencies are installed
 
-      - name: Run Playwright with Debugging
-        run: pytest --browser chromium --verbose
-        env:
-           PWDEBUG: 1  # Enables detailed Playwright debugging logs        
-
       - name: Run Playwright Tests (Headless)
         run: pytest --browser chromium --headless
+        env:
+           PWDEBUG: 1  # Enables detailed Playwright debugging logs     
 
       - name: Run Playwright Tests
         run: |
