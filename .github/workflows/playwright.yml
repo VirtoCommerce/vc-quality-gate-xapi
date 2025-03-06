@@ -35,7 +35,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-playwright pytest-html
-          playwright install --with-deps  # Ensure all dependencies are installed
+          playwright install chromium  # Install only Chromium browser
+          playwright install-deps      # Install system dependencies
         
 
       - name: Run Playwright Tests
