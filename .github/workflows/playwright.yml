@@ -46,18 +46,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgbm-dev  # Required for Chromium
           sudo apt-get install -y xvfb        # Virtual framebuffer for headless mode
-
-      - name: Verify Playwright Browsers
-        run: ls -la $(playwright show-browsers-path)  #Debugging step    
+      
+      - name: Run Authentication Tests
+        run: |
+          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
+          pytest tests/test_auth.py -v
 
       - name: Run Playwright Tests
         run: |
-          echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
-          pytest tests/ --browser chromium --html=report.html --self-contained-html -v
-        env:
-          PYTHONUNBUFFERED: 1
-          PLAYWRIGHT_BROWSERS_PATH: 0
-        continue-on-error: true
+          pytest --browser chromium --html=report.html --self-contained-html
+        continue-on-error: true  # Continue to upload reports even if tests fail
+
 
       - name: Upload Playwright Test Report
         if: always()
