@@ -10,7 +10,7 @@ on:
 
 jobs:
   playwright-test:
-    timeout-minutes: 60  # Prevent hanging jobs
+    timeout-minutes: 60
     runs-on: ubuntu-latest
 
     env:
@@ -18,11 +18,11 @@ jobs:
       BASE_URL: https://vcst-qa.govirto.com
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: Password3
-      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}  # Store sensitive tokens as GitHub Secrets
+      ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  # Use latest version
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -36,34 +36,28 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-playwright pytest-html
 
-              
       - name: Install Playwright Browsers
         run: |
-          python -m playwright install --with-deps
+          python -m playwright install --with-deps chromium
 
-      - name: Run your tests
-        run: pytest --tracing=retain-on-failure
-      
       - name: Run Playwright Tests
         run: |
           echo "Running tests against ${{ env.ENVIRONMENT_URL }}"
-          pytest tests/ --browser chromium --html=report.html --self-contained-html -v
+          pytest tests/ --browser chromium --html=report.html --self-contained-html --tracing=retain-on-failure -v
         continue-on-error: true
 
-
-      - name: Upload Playwright Test Report
+      - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-test-report
-          path: |
-            report.html
+          path: report.html
           retention-days: 7
 
-      - name: Upload Test Screenshots
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
+      - name: Upload Test Traces
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-traces
-          path: test-results/     
+          path: test-results/
           retention-days: 7
