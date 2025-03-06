@@ -25,6 +25,8 @@ def test_user_registration(browser_context):
     
     # Navigate to registration page
     page.goto(url)
+    print(page.content())
+    page.wait_for_timeout(1000)
     expect(page.get_by_text("Sign up now")).to_be_visible()
     page.get_by_text("Sign up now").click()
     
