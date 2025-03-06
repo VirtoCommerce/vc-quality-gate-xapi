@@ -40,10 +40,7 @@ jobs:
       - name: Run Playwright with Debugging
         run: pytest --browser chromium --verbose
         env:
-           PWDEBUG: 1  # Enables detailed Playwright debugging logs
-           
-      - name: Run Playwright Tests in Headed Mode (Debugging)
-        run: pytest --browser chromium --headed
+           PWDEBUG: 1  # Enables detailed Playwright debugging logs        
 
       - name: Run Authentication Tests
         run: |
