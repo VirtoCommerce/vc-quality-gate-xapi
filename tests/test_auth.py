@@ -25,7 +25,8 @@ def test_user_registration(browser_context):
     
     # Navigate to registration page
     page.goto(url)
-    page.get_by_role("link", name="Sign up now").click()
+    expect(page.get_by_text("Sign up now")).to_be_visible()
+    page.get_by_text("Sign up now").click()
     
     # Fill registration form
     page.get_by_role("textbox", name="First name").fill("John")
@@ -33,6 +34,7 @@ def test_user_registration(browser_context):
     global email
     email = "johnplaywright" + str(random.randint(1000,9999)) + "@example.com"
     page.get_by_role("textbox", name="Email").fill(email)
+    print(email)
     page.get_by_role("textbox", name="Password", exact=True).fill("Password1")
     page.get_by_role("textbox", name="Confirm password").fill("Password1")
     
@@ -52,7 +54,8 @@ def test_user_login(browser_context):
     
     # Navigate to login page
     page.goto(url)
-    page.get_by_role("link", name="Sign in").click()
+    expect(page.get_by_text("Sign in")).to_be_visible()
+    page.get_by_text("Sign in").click()
     
     # Fill login form
     page.get_by_role("textbox", name="Email").fill(email)
