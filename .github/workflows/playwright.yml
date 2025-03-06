@@ -36,10 +36,13 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-playwright pytest-html
           
-      - name: Install Playwright browsers
+      - name: Install Playwright Browsers
         run: |
-          python -m playwright install chromium
-          python -m playwright install-deps chromium
+          playwright install
+          playwright install-deps
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev  # Required for Chromium
+          sudo apt-get install -y xvfb        # Virtual framebuffer for headless mode
 
       - name: Run Playwright Tests
         run: |

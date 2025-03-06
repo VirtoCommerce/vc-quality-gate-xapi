@@ -12,7 +12,10 @@ email = None
 
 @pytest.fixture
 def browser_context(playwright: Playwright):
-    browser = playwright.chromium.launch(headless=True)
+    browser = playwright.chromium.launch(
+        headless=True,
+        args=['--no-sandbox', '--disable-setuid-sandbox']  # Add these arguments
+    )
     context = browser.new_context(
         viewport={'width': 1920, 'height': 1080},
         base_url=os.getenv("BASE_URL", "https://vcst-qa-storefront.govirto.com")
